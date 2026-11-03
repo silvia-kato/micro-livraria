@@ -1,3 +1,4 @@
+
 const grpc = require('@grpc/grpc-js');
 const protoLoader = require('@grpc/proto-loader');
 const products = require('./products.json');
@@ -20,8 +21,20 @@ server.addService(inventoryProto.InventoryService.service, {
             products: products,
         });
     },
+
+    SearchProductByID: (call, callback) => {
+        const product = products.find(
+            (product) => product.id == call.request.id
+        );
+
+        callback(null, product);
+    },
 });
 
-server.bindAsync('127.0.0.1:3002', grpc.ServerCredentials.createInsecure(), () => {
-    console.log('Inventory Service running at http://127.0.0.1:3002');
-});
+server.bindAsync(
+    '127.0.0.1:3002',
+    grpc.ServerCredentials.createInsecure(),
+    () => {
+        console.log('Inventory Service running at http://127.0.0.1:3002');
+    }
+);
